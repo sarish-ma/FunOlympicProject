@@ -1,5 +1,7 @@
 using FunOlympicProject.Data;
+using FunOlympicProject.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +11,26 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddSingleton <IEmailSender, EmailSender>();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddAuthentication().AddFacebook(options =>
+
+{
+    options.AppId = "1438940143294240";
+    options.AppSecret = "d113a3e1467df6bedea178851927346e";
+
+}
+
+);
+
+
+
+
 
 var app = builder.Build();
 

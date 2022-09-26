@@ -1,8 +1,45 @@
-﻿@{
+﻿@model IEnumerable<Videos>
+
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+<div class="row pb-3">
+ // @foreach (var video in Model)//
+    {
+        <div class="col-lg-3 col-md-6 mb-4 ">
+
+
+            <div class="col-12 p1" style="border:1px solid #008cba; border-radius:5px;">
+
+                <div class="card">
+                        <img src="@video.Thumbnaillink" class="card-img-top rounded " style="height:180px" />
+                        <div class="p-1" style="height:100px">
+                            <p class="Card-title h5 text-primary">@video.Title</p>
+                            <p class="Card-title text-secondary text-light">@video.Category</p>
+                        </div>
+                        <div class="p-0">
+                            <p class="card-title text-primary fw-bold">@video.Description</p>
+                        </div>
+                        <div class="p-0">
+                            <p class="card-title text-primary fw-bold">@video.PublishedDate</p>
+                        </div>
+
+                    <a class="btn btn-primary" asp-controller="Home" asp-action="VideoPlay" asp-route-id="@video.Videolink">Play</a>
+                    
+                   
+                </div>
+
+            </div>
+
+        </div>
+
+    }
 </div>

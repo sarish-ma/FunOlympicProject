@@ -30,14 +30,19 @@ namespace FunOlympicProject.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
 
         public RegisterModel(
+           
+            RoleManager<IdentityRole> roleManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -99,6 +104,8 @@ namespace FunOlympicProject.Areas.Identity.Pages.Account
             [Display(Name = "DOB")]
             public DateTime DOB { get; set; }
 
+            public string Role { get; set; }
+
 
 
             [Required]
@@ -129,6 +136,13 @@ namespace FunOlympicProject.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+
+            if(!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole("admin")).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole("user")).GetAwaiter().GetResult();
+            }
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -155,6 +169,16 @@ namespace FunOlympicProject.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if(Input.Role==null)
+                    {
+                        await _userManager.AddToRoleAsync(user, "user");
+
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
